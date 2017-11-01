@@ -1,0 +1,6 @@
+.DS_Store
+*.rdb
+*.log
+.idea
+test
+node_modules
