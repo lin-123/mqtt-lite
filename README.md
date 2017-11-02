@@ -3,10 +3,18 @@
 ## TODO
 1. 添加单测
 2. mqtt瘦身 只需要connect subscribe publish 功能
-3. make build 失败
 
 ## 介绍
 - 封装mqtt， 可以让 publish subscribe 功能不用等待connect执行后再执行
+
+#### API
+- new MqttLite(connection, option)
+
+- subscribe
+
+- publish
+
+- error
 
 #### 使用方式
 ```javascript
