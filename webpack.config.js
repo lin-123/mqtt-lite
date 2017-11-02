@@ -23,7 +23,7 @@ const devConf = {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
     libraryTarget: "umd",
-    library: "wx"
+    library: "MqttLite"
   }
 };
 
