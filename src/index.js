@@ -10,6 +10,8 @@ class MqttLite {
    * @param  {Boolean=}   option.debug [可选项。 是否开启debug模式]
    */
   constructor(conn, option = {}) {
+    if(!conn) return this.log.error('invalid connection url')
+
     let clientResolve
     this.clientPromise = new window.Promise(resolve => clientResolve = resolve)
     this.topicDistribute = {}
@@ -40,7 +42,6 @@ class MqttLite {
    * @param {Function} msgHandler [callback when mqtt connection revcive error message]
    */
   async error(msgHandler) {
-    this.log.info(`subscribe error`)
     const client = await this.clientPromise
     client.on('error', () => {
       this.log.error(arguments)
@@ -53,6 +54,9 @@ class MqttLite {
    * @param {Function} msgHandler [callback when this topic revice message]
    */
   async subscribe(topic, msgHandler){
+    if(!topic || typeof msgHandler !== 'function')
+      return this.log.error(`subscribe: invalid params`);
+
     this.log.info(`subscribe topic: topic=${topic}`)
     const client = await this.clientPromise
     this.topicDistribute[topic] = msgHandler
@@ -64,8 +68,8 @@ class MqttLite {
    * @param {*} payload  [send message that can be number, string, boolean, object]
    */
   async publish(topic, payload){
-    if(payload == null)
-      return this.log.error(`publish message error: payload should not be null`);
+    if(!topic || payload == null)
+      return this.log.error(`publish: invalid params`);
     this.log.info(`publish message: topic=${topic} payload=${payload}`)
     const client = await this.clientPromise
     return client.publish(topic, JSON.stringify(payload))
