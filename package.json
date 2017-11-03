@@ -1,7 +1,7 @@
 {
   "name": "mqtt-lite",
   "version": "1.0.0",
-  "description": "mqtt function wait connect",
+  "description": "use mqtt`s method without wait for connection ready",
   "main": "dist/index.min.js",
   "scripts": {},
   "author": "lin-123",

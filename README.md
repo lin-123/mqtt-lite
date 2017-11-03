@@ -1,11 +1,7 @@
 # mqtt-lite
 
-## TODO
-1. add unit test
-2. simplify mqtt node_module, just keep connect. too hard
-
 ## Introduction
-- let mqtt`s method called without wait for connection ready
+- use mqtt`s method without wait for connection ready. support nodejs and browser.
 
 #### API
 
