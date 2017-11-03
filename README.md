@@ -1,31 +1,67 @@
 # mqtt-lite
 
 ## TODO
-1. 添加单测
-2. mqtt瘦身 只需要connect subscribe publish 功能
+1. add unit test
+2. simplify mqtt node_module, just keep connect
 
-## 介绍
-- 封装mqtt， 可以让 publish subscribe 功能不用等待connect执行后再执行
+## Introduction
+- let mqtt`s method called without wait for connection ready
 
 #### API
+
 - new MqttLite(connection, option)
+``` javascript
+/**
+ * mqtt-lite
+ * @param  {string} conn   [mqtt websocket url]
+ * @param  {Object} option [mqtt connect opiton see:  https://github.com/mqttjs/MQTT.js#connect]
+ * @param  {bool}   option.debug [lite option, if debug is true, mqtt-lite will print log to console]
+ */
+new MqttLite(connection, option)
+```
 
 - subscribe
+```javascript
+/**
+ * @param {Sting} topic
+ * @param {Function} msgHandler [callback when this topic revice message]
+ */
+subscribe(topic, msgHandler)
+```
 
 - publish
+```javascript
+/**
+ * @param {String} topic
+ * @param {*} payload  [send message that can be number, string, boolean, object]
+ */
+publish(topic, payload)
+```
 
 - error
-
-#### 使用方式
 ```javascript
-import MqttLite from '../dist/index.min.js'
+/**
+ * @param {Function} msgHandler [callback when mqtt connection revcive error message]
+ */
+error(msgHandler)
+```
+
+
+#### Usage
+```javascript
+import MqttLite from 'mqtt-lite'
+
 // debug: true  打印mqtt-lite log
 const mqtt = new MqttLite('ws://iot.eclipse.org:80/ws', {debug: true})
+
 mqtt.subscribe('testx', (msg) => {
     console.log('recive message: ', msg)
 })
+
 mqtt.publish('testx', 'hello world!')
+
 mqtt.error((e) => {
   console.error(e)
 })
 ```
+

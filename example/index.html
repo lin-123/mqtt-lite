@@ -26,7 +26,7 @@
     </div>
     <script type="text/javascript" src="../dist/index.min.js"></script>
     <script>
-        const mqtt = new MqttLite('ws://iot.eclipse.org:80/ws', {debug: true})
+        const mqtt = new MqttLite('ws://iot.eclipse.org:80/ws', {debug: false})
         mqtt.subscribe('testx', (msg) => {
             console.log('recive message: ', msg)
             document.getElementsByClassName('message')[0].insertAdjacentHTML('beforeBegin', `<p>${msg}</p>`)
@@ -36,6 +36,7 @@
             mqtt.publish('testx', document.getElementById('message').value)
         }
         mqtt.publish('testx', 'hello world!')
+        // mqtt.publish('testx', true)
     </script>
 </body>
 
