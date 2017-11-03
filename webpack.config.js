@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack')
 const merge = require('webpack-merge')
 
-const devConf = {
+const webpackConfig = {
   entry: {
     app: './src/index.js',
   },
@@ -24,17 +24,21 @@ const devConf = {
     publicPath: '/',
     libraryTarget: "umd",
     library: "MqttLite"
-  }
+  },
+  plugins: []
 };
 
-const proConf = {
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    })
-  ],
+if (process.env.NODE_ENV == 'production' || process.env.ANALYZE) {
+  webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {
+      warnings: false
+    }
+  }))
 }
 
-module.exports = process.env.NODE_ENV == 'production' ? merge(devConf, proConf):devConf
+if (process.env.ANALYZE) {
+  const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+  webpackConfig.plugins.push(new BundleAnalyzerPlugin())
+}
+
+module.exports = webpackConfig
