@@ -2,5 +2,4 @@
 *.rdb
 *.log
 .idea
-test
 node_modules

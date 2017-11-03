@@ -1,5 +1,5 @@
 // todo: 封装mqtt  暴露一个register方法，接收两个参数：topic listener
-const {connect} = require('mqtt')
+const mqtt = require('mqtt')
 const Log = require('./log')
 class MqttLite {
 
@@ -13,12 +13,12 @@ class MqttLite {
     if(!conn) return this.log.error('invalid connection url')
 
     let clientResolve
-    this.clientPromise = new window.Promise(resolve => clientResolve = resolve)
+    this.clientPromise = new Promise(resolve => clientResolve = resolve)
     this.topicDistribute = {}
     let opt = Object.assign({}, option)
     this.log = new Log(opt.debug)
     delete opt.debug
-    const client = connect(conn, opt)
+    const client = mqtt.connect(conn, opt)
     client.on('connect', (msg) => {
       this.log.info('mqtt connect success!')
       clientResolve(client)
@@ -32,7 +32,7 @@ class MqttLite {
       try{
         msgHandler(JSON.parse(payloadStr))
       }catch(e) {
-        this.log.error('payload json parse error: ', e)
+        this.log.warn('payload json parse error: ', e)
         msgHandler(payloadStr)
       }
     })
@@ -41,11 +41,14 @@ class MqttLite {
   /**
    * @param {Function} msgHandler [callback when mqtt connection revcive error message]
    */
-  async error(msgHandler) {
-    const client = await this.clientPromise
-    client.on('error', () => {
-      this.log.error(arguments)
-      msgHandler(arguments)
+  error(msgHandler) {
+    if(typeof msgHandler != 'function'){
+      this.log.error('error: invalid msgHandler')
+      return Promise.reject('invalid msgHandler')
+    }
+
+    this.clientPromise.then(client => {
+      client.on('error', msgHandler)
     })
   }
 
@@ -53,26 +56,31 @@ class MqttLite {
    * @param {Sting} topic
    * @param {Function} msgHandler [callback when this topic revice message]
    */
-  async subscribe(topic, msgHandler){
-    if(!topic || typeof msgHandler !== 'function')
-      return this.log.error(`subscribe: invalid params`);
+  subscribe(topic, msgHandler){
+    if(typeof msgHandler !== 'function'){
+      this.log.error(`subscribe: invalid msgHandler`);
+      return Promise.reject('invalid msgHandler')
+    }
 
     this.log.info(`subscribe topic: topic=${topic}`)
-    const client = await this.clientPromise
-    this.topicDistribute[topic] = msgHandler
-    return client.subscribe(topic)
+    return this.clientPromise.then(client => {
+      this.topicDistribute[topic] = msgHandler
+      return client.subscribe(topic)
+    })
   }
 
   /**
    * @param {String} topic
    * @param {*} payload  [send message that can be number, string, boolean, object]
    */
-  async publish(topic, payload){
-    if(!topic || payload == null)
-      return this.log.error(`publish: invalid params`);
+  publish(topic, payload){
+    if(payload == null){
+      this.log.error(`publish: invalid params`);
+      return Promise.reject('payload should not be null')
+    }
+
     this.log.info(`publish message: topic=${topic} payload=${payload}`)
-    const client = await this.clientPromise
-    return client.publish(topic, JSON.stringify(payload))
+    return this.clientPromise.then(client => client.publish(topic, JSON.stringify(payload)))
   }
 }
 
