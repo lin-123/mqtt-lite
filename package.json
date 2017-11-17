@@ -11,10 +11,10 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/lin-123/mqtt-lite"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/lin-123/mqtt-lite/issues"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
