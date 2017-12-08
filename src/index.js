@@ -1,4 +1,9 @@
-// todo: 封装mqtt  暴露一个register方法，接收两个参数：topic listener
+/**
+ * todo:
+ *   封装mqtt  暴露一个register方法，接收两个参数：topic listener
+ *   wrap all mqtt methods
+ */
+
 const mqtt = require('mqtt')
 const Log = require('./log')
 class MqttLite {
