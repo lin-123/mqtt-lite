@@ -1,10 +1,15 @@
 class Log {
   constructor(debug = false) {
     this.debug = debug
-    ;['info', 'warn'].forEach(key => {
-      this[key] = (msg) => debug && console[key]('#mqtt-lite# ', msg)
+    ;['info', 'error'].forEach(key => {
+      this[key] = (...args) => debug && console[key]('#mqtt-lite# ', ...args)
     })
-    this.error = (msg) => console.error('#mqtt-lite# ', msg)
+    this.error = (...args) => console.error('#mqtt-lite# ', ...args)
+  }
+
+  flatParam(info, params) {
+    const paramsStr = Object.keys(params).map( key => `${key}=`+JSON.stringify(params[key])).join(',')
+    this.info(`${info}: ${paramsStr}` )
   }
 }
 
