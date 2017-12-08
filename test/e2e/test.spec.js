@@ -2,17 +2,26 @@
 const MqttLite = require('../../src')
 
 describe('MqttLite', () => {
-  let mqttLite
-  before(() => {
-    mqttLite = new MqttLite('ws://iot.eclipse.org:80/ws', {debug: true})
+  const mqttLite = new MqttLite('ws://iot.eclipse.org:80/ws', {debug: true})
+  after(() => {
+    mqttLite.end()
   })
-  it('normal', () =>  {
+  it('normal', (done) =>  {
     const payload = 'hello world!'
     mqttLite.subscribe('testx', (msg) => {
-      console.log('msg,,', msg)
+      console.log('asdf', msg)
       expect(msg).toEqual(payload)
       done()
     })
     mqttLite.publish('testx', payload)
+  })
+
+  it('normal, qos=1', (done) =>  {
+    const payload = 'hello world!'
+    mqttLite.subscribe('testx', { qos:1 }, (msg) => {
+      expect(msg).toEqual(payload)
+      done()
+    })
+    mqttLite.publish('testx', payload, { qos:1 })
   })
 })

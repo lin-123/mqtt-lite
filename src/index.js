@@ -1,4 +1,9 @@
-// todo: 封装mqtt  暴露一个register方法，接收两个参数：topic listener
+/**
+ * todo:
+ *   封装mqtt  暴露一个register方法，接收两个参数：topic listener
+ *   wrap all mqtt methods
+ */
+
 const mqtt = require('mqtt')
 const Log = require('./log')
 class MqttLite {
@@ -26,7 +31,7 @@ class MqttLite {
 
     client.on('message', (topic, payload) => {
       const payloadStr = payload.toString()
-      this.log.info(`revice message: topic=${topic} payload=${payloadStr}`)
+      this.log.flatParam(`revice message`, {topic, payloadStr})
       const msgHandler = this.topicDistribute[topic]
       if(!msgHandler) return;
       try{
@@ -36,6 +41,10 @@ class MqttLite {
         msgHandler(payloadStr)
       }
     })
+  }
+
+  end() {
+    this.clientPromise.then(client => client.end())
   }
 
   /**
@@ -56,16 +65,22 @@ class MqttLite {
    * @param {Sting} topic
    * @param {Function} msgHandler [callback when this topic revice message]
    */
-  subscribe(topic, msgHandler){
+  subscribe(...args){
+    const msgHandler = args.pop()
     if(typeof msgHandler !== 'function'){
       this.log.error(`subscribe: invalid msgHandler`);
       return Promise.reject('invalid msgHandler')
     }
 
-    this.log.info(`subscribe topic: topic=${topic}`)
+    const [topic, options = {}] = args
+    this.log.flatParam(`subscribe topic`, {topic, options})
     return this.clientPromise.then(client => {
       this.topicDistribute[topic] = msgHandler
-      return client.subscribe(topic)
+      return new Promise((resolve, reject) => {
+        client.subscribe(topic, options, (err, pkg) => {
+          err?reject(err):resolve(pkg)
+        })
+      })
     })
   }
 
@@ -73,14 +88,14 @@ class MqttLite {
    * @param {String} topic
    * @param {*} payload  [send message that can be number, string, boolean, object]
    */
-  publish(topic, payload){
+  publish(topic, payload, options = {}){
     if(payload == null){
       this.log.error(`publish: invalid params`);
       return Promise.reject('payload should not be null')
     }
 
-    this.log.info(`publish message: topic=${topic} payload=${payload}`)
-    return this.clientPromise.then(client => client.publish(topic, JSON.stringify(payload)))
+    this.log.flatParam(`publish message`, {topic, payload, options})
+    return this.clientPromise.then(client => client.publish(topic, JSON.stringify(payload), options))
   }
 }
 
