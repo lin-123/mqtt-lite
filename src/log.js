@@ -1,7 +1,7 @@
 class Log {
   constructor(debug = false) {
     this.debug = debug
-    ;['info', 'error'].forEach(key => {
+    ;['info', 'warn', 'error'].forEach(key => {
       this[key] = (...args) => debug && console[key]('#mqtt-lite# ', ...args)
     })
     this.error = (...args) => console.error('#mqtt-lite# ', ...args)
