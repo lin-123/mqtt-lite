@@ -38,6 +38,10 @@ class MqttLite {
     })
   }
 
+  end() {
+    this.clientPromise.then(client => client.end())
+  }
+
   /**
    * @param {Function} msgHandler [callback when mqtt connection revcive error message]
    */
@@ -66,8 +70,7 @@ class MqttLite {
     const [topic, options = {}] = args
     this.log.flatParam(`subscribe topic`, {topic, options})
     return this.clientPromise.then(client => {
-      const key = JSON.stringify(args)
-      this.topicDistribute[key] = msgHandler
+      this.topicDistribute[topic] = msgHandler
       return new Promise((resolve, reject) => {
         client.subscribe(topic, options, (err, pkg) => {
           err?reject(err):resolve(pkg)

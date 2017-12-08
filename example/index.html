@@ -28,7 +28,6 @@
     <script>
         const mqtt = new MqttLite('ws://iot.eclipse.org:80/ws', {debug: true})
         mqtt.subscribe('testx', (msg) => {
-            console.log('recive message: ', msg)
             document.getElementsByClassName('message')[0].insertAdjacentHTML('beforeBegin', `<p>${msg}</p>`)
             document.getElementById('message').value = ''
         }).then(e=>{

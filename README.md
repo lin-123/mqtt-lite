@@ -22,7 +22,7 @@ new MqttLite(connection, option)
  * @param {Sting} topic
  * @param {Function} msgHandler [callback when this topic revice message]
  */
-subscribe(topic, msgHandler)
+subscribe(topic, [options], msgHandler)
 ```
 
 - publish
@@ -31,7 +31,7 @@ subscribe(topic, msgHandler)
  * @param {String} topic
  * @param {*} payload  [send message that can be number, string, boolean, object]
  */
-publish(topic, payload)
+publish(topic, payload, [options])
 ```
 
 - error
@@ -42,6 +42,13 @@ publish(topic, payload)
 error(msgHandler)
 ```
 
+- end
+```javascript
+/**
+ * close socket connection
+ */
+end()
+```
 
 #### Usage
 ```javascript
@@ -52,6 +59,7 @@ const mqtt = new MqttLite('ws://iot.eclipse.org:80/ws', {debug: true})
 
 mqtt.subscribe('testx', (msg) => {
     console.log('recive message: ', msg)
+    mqtt.end()
 })
 
 mqtt.publish('testx', 'hello world!')
